@@ -24,6 +24,7 @@ Autor: Isaac Quiroz
 Objetivo: Descarga de todos los capítulos de una serie
 '''  
 import webControl
+import downloader
 import os
 import re
 #Imprimir versión
@@ -169,24 +170,8 @@ def GetAllCap(url,title):
 		capitulo.append(Capitulo(videoUrl.replace('jk.php?u=', ''), epNames[0]))	
 		saveFile=os.path.join(savePath, capitulo[0].namecap)
 		#lanza función download
-		Download(capitulo,saveFile) 
+		downloader.Download(capitulo,saveFile) 
 		
-			
-def Download(capitulo,saveFile):
-        #Variable para control ciclo
-        i=0
-        while  i<len(capitulo):
-                n=str(i)
-                dl='youtube-dl -o ''"'+saveFile+' '+n+'.mp4''"'+' '+capitulo[i].url
-                #Llama el comando desde el terminal
-                er=os.system(dl)
-                if er!=0 and not os.path.isfile(saveFile+' '+n+'.mp4'):
-                        i+=1
-                elif er!=0 and os.path.isfile(saveFile+' '+n+'.mp4'):
-                  er=os.system(dl)
-                else:
-                        i=len(capitulo)
-                        
 #Función principal
 def main():
 	#Llama la función para la entrada de la búsqueda
