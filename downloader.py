@@ -21,17 +21,18 @@
 #  MA 02110-1301, USA.
 #  
 #  
+import os
 def Download(capitulo,saveFile):
         #Variable para control ciclo
         i=0
         while  i<len(capitulo):
                 n=str(i)
-                dl='youtube-dl -o ''"'+saveFile+' '+n+'.mp4''"'+' '+capitulo[i].url
+                dl='youtube-dl -o ''"'+saveFile+'.mp4''"'+' '+capitulo[i].url
                 #Llama el comando desde el terminal
                 er=os.system(dl)
-                if er!=0 and not os.path.isfile(saveFile+' '+n+'.mp4'):
+                if er!=0 and not os.path.isfile(saveFile+'.mp4'):
                         i+=1
-                elif er!=0 and os.path.isfile(saveFile+' '+n+'.mp4'):
+                elif er!=0 and os.path.isfile(saveFile+'.mp4'):
                   er=os.system(dl)
                 else:
                         i=len(capitulo)
