@@ -2,6 +2,6 @@
 to Isaac Quiroz
 
  <h2>Requirements:</h2>
- youtube-dl
+ youtube-dl</br>
  lxml
  requests
