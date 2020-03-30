@@ -1,4 +1,4 @@
-JK Versión 1.0<h1>
+<h1>JK Versión 1.0</h1>
 to Isaac Quiroz
 
  Requirements:
