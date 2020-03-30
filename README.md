@@ -4,5 +4,5 @@ to Isaac Quiroz
  <h2>Requirements:</h2>
  youtube-dl</br>
  python library:</br>
-	* lxml
-	*requests
+	* lxml</br>
+	*requests</br>
