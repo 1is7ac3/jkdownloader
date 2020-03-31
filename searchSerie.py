@@ -3,7 +3,7 @@
 #
 #  JK
 #  
-#  Copyright 2017 Isaac Quiroz <isaac.qa13@gmail.com>
+#  Copyright 2020 Isaac Quiroz <isaac.qa13@gmail.com>
 #  
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,29 +23,15 @@
 Autor: Isaac Quiroz
 Objetivo: Descarga de todos los capítulos de una serie
 '''  
-import webControl
+import control
 import os
-import re
-#Imprimir versión
-version='DownSerie 1.0\n'
-#Clase Serie 
-class Serie:
-	def __init__(self, name, num, url):
-		self.name=name
-		self.num=num
-		self.url=url
-#Clase capitulo 		
-class Capitulo:
-	def __init__(self, url, namecap):
-		self.url=url
-		self.namecap=namecap
-		
+
 #Función Para la captura de los datos de la serie a descargar
 def SearchInput():
 	#Ciclo para la captura  
 	while True:
 		#Imprime versión de la app
-		print (version)
+		control.version()
 		#Imprime sugerencia
 		print('Debido al diseño de la pagina solo se mostraran diez coincidencias.\n')
 		#Captura el nombre de la serie a buscar
@@ -63,7 +49,7 @@ def SearchEngine(search):
 	#Une el nombre de la búsqueda con la pagina
 	searchUrl='http://jkanime.net/buscar/'+search+'/1/'
 	#Se revisa el estado de la pagina
-	page=webControl.GetUrl(searchUrl)
+	page=control.GetUrl(searchUrl)
 	#Captura los enlaces de las diez primeras series
 	Links=page.xpath('//h2[@class="portada-title"]/a/@href')
 	#Captura el nombre de las series desde la pagina web
@@ -77,54 +63,26 @@ def SearchEngine(search):
 	serieList=[]
 	#Guarda los datos obtenidos usando la clase Anime
 	for n in range(0, linkNum):
-		serie=Serie(Names[n],n,Links[n])
+		serie=control.Serie(Names[n],n,Links[n])
 		serieList.append(serie)
 	return serieList
-#Función para mostrar los resultados y seleccionar cual se va a descargar  
-def ShowResult(results):
-	#Ciclo por si se introduce un dato erróneo 
-	while True:
-		#Imprime versión de la app
-		print(version)
-		#Imprime Instrucciones
-		print('Seleccione el numero de la serie que desea descargar:\n')
-		#Ciclo para imprimir todos los resultados
-		for bus in results:
-			n=str(bus.num)
-			print ('[',n,']',bus.name)
-		#Imprime información y captura el numero a usar
-		choice=input('\n Introduzca el numero de la serie a Descargar: ')
-		#Comprueba si el dato entrante es un numero
-		if choice.isdigit():
-			#si es un numero convierte la variable en un entero 
-			choice=int(choice)
-			#Compara que el entero introducido este en la lista impresa
-			if choice>=len(results):
-				print ('\n[!] Error!. El numero no esta en la lista. Presione ENTER para re-intentar.')
-				#input()
-			else:
-				return choice
-		else:
-			print ('\n[!]Error! Introduzca un Numero. Presione ENTER para re-intentar.')
-			#input()
+
 #Función para descargar todos los capítulos  		
 def GetAllCap(url,title):
 	#Imprime versión
-	print(version)
+	control.version()
 	#Se obtiene nombre de usuario
 	#Se crea variable con la dirección donde se va a guardar 
 	path=os.environ['HOME']+'/.Anime'
 	if not os.path.exists(path):
 		os.mkdir(path)
-	#Nombre de carpeta 
-	folderName=title
 	#se unen la ruta de descarga con la carpeta donde se van a guardar los capítulos
-	savePath=os.path.join(path, folderName)
+	savePath=os.path.join(path, title)
 	#Se crea la capeta si no se existe
 	if not os.path.exists(savePath):
 		os.mkdir(savePath)
 	#Se verifica la url de los capítulos
-	page=webControl.GetUrl(url)
+	page=control.GetUrl(url)
 	#se extrae los datos del numero de paginas 
 	pageLink=page.xpath('//div[@class="navigation"]/a/text()')
 	#Se obtiene el numero de paginas 
@@ -136,63 +94,37 @@ def GetAllCap(url,title):
 	#Obtener cuantos capítulos tiene la serie.   
 	ran=int(exac.replace(ini+' - ',''))
 	#Ciclo para descarga delos capítulos
-	inide=int(input('Introduzca primer capitulo para iniciar:\n'))
-	finde=-1
-	while finde==-1:
-		print('si no desea descargar por rango introduzca: 0\n')
-		finde=int(input('Introduzca Ultimo capitulo para decargar:\n'))
-		if finde>ran or finde<-1:
-			print('No esta entre rango de capitulos disponible intente nuevamente.\n')
-			finde=-1
-		elif finde<ran and finde!=0:
-			ran=finde
-			finde=0
-		
+	inide=1
+	print('desea descargar por rango.\n[0] Sí.\n[*] No.\n')
+	opts=input('Introduzca su opción:\n')
+	if opts==0:
+		inide=int(input('Introduzca primer capitulo para iniciar:\n'))
+		finde=-1
+		while finde==-1:
+			print('si desea descargar hasta el ultimo capitulo disponible introduzca: 0\n')
+			finde=int(input('Introduzca Ultimo capitulo para descargar:\n'))
+			if finde>ran or finde<-1:
+				print('No esta entre rango de capítulos disponible intente nuevamente.\n')
+				finde=-1
+			elif finde<ran and finde!=0:
+				ran=finde
+				finde=0
+	else:
+		print('se descargara desde el capitulo',inide,'hasta',ran,':')
 	for n in range(inide,(ran+1)):
 		#Variable donde se convierte en texto para ser usado en la url del capitulo 
 		capi=str(n)
 		#Se une la url con el numero del capitulo a descargar
 		url2=url+capi+'/'
-		#Verifica estado de la url
-		page=webControl.GetUrl(url2)
-		#Extrae el enlace de descarga
-		fulljs=page.xpath('//script/text()')
-		buscript=re.findall('video\[2\] =(.*)/"',str(fulljs))
-		videoUrl=buscript[0].replace(' \\\'<iframe class="player_conte" src="','')
-		#rawLinks = page.xpath('//iframe[@class="player_conte"]/@src')
-		#Extrae el nombre del capitulo
-		epNames = page.xpath('//div[@class="video-header"]/h1/text()')
-		#Extrae el nombre del servidor de descarga
-		seNames=page.xpath('//ul[@class="server-tab"]//a/text()')
-		#Crea lista vaciá
-		capitulo=[]
-		capitulo.append(Capitulo(videoUrl.replace('jk.php?u=', ''), epNames[0]))	
-		saveFile=os.path.join(savePath, capitulo[0].namecap)
-		#lanza función download
-		Download(capitulo,saveFile) 
-		
-			
-def Download(capitulo,saveFile):
-        #Variable para control ciclo
-        i=0
-        while  i<len(capitulo):
-                n=str(i)
-                dl='youtube-dl -o ''"'+saveFile+' '+n+'.mp4''"'+' '+capitulo[i].url
-                #Llama el comando desde el terminal
-                er=os.system(dl)
-                if er!=0 and not os.path.isfile(saveFile+' '+n+'.mp4'):
-                        i+=1
-                elif er!=0 and os.path.isfile(saveFile+' '+n+'.mp4'):
-                  er=os.system(dl)
-                else:
-                        i=len(capitulo)
-                        
+		servi=control.getVideo(url2)
+		control.Download(servi,savePath) 
+		                        
 #Función principal
 def main():
 	#Llama la función para la entrada de la búsqueda
 	buscar=SearchInput()
 	#Llama la función para mostrar resultado de la búsqueda
-	choice=ShowResult(buscar)
+	choice=control.showResult(buscar)
 	#Obtiene nombre de la serie para la carpeta
 	title = buscar[choice].name
 	#Llama la función para descargar todo los capítulos 
