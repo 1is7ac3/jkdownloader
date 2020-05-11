@@ -26,18 +26,21 @@ import newEpisode as nE
 import control
 
 def main():
-	
-	control.version()
-	print('[1] Ver últimos capítulos emitidos.\n')
-	print('[2] Buscar Serie.\n')
-	opt=str(input('Introduzca la opción deseada:\n'))
-	if opt=='2':
-		sS.main()
-	elif opt=='1':
-		nE.main()
-	else:
-		print('Error Valor invalido....')
-		control.sleep(2)
+    
+    control.version()
+    print('[1] Ver últimos capítulos emitidos.\n')
+    print('[2] Buscar Serie.\n')
+    print('[3] Exit.\n')
+    opt=str(input('Introduzca la opción deseada:\n'))
+    if opt=='2':
+        sS.main()
+    elif opt=='1':
+        nE.main()
+    elif opt=='3':
+        exit()
+    else:
+        print('Error Valor invalido....')
+        control.sleep(2)
 
 if __name__ == '__main__':
     while True:
